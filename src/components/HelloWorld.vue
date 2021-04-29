@@ -52,7 +52,9 @@ export default defineComponent({
     });
 
     onUpdated(async () => {
-      stream.value.getVideoTracks()[0].enabled = state.role === "host";
+      if (stream.value) {
+        stream.value.getVideoTracks()[0].enabled = state.role === "host";
+      }
     });
 
     const joinRoom = () => {
@@ -85,20 +87,29 @@ export default defineComponent({
       room.on("peerLeave", (peerId: string) => {
         const remoteVideo = remoteVideos.value.querySelector(
           `[data-peer-id="${peerId}"]`
-        );
+        ) as HTMLMediaElement;
 
-        remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
-        remoteVideo.srcObject = null;
-        remoteVideo.remove();
+        if (remoteVideo && remoteVideo.srcObject) {
+          const tracks = (<MediaStream>remoteVideo.srcObject).getTracks();
+          tracks.forEach((track) => track.stop());
+          remoteVideo.srcObject = null;
+          remoteVideo.remove();
+        }
 
         console.warn(`${peerId} Left`);
       });
 
       room.once("close", () => {
-        Array.from(remoteVideos.value.children).forEach((video) => {
-          video.srcObject.getTracks().forEach((track) => track.stop());
-          video.srcObject = null;
-          video.remove();
+        const videoElements = Array.from(
+          remoteVideos.value.children
+        ) as HTMLMediaElement[];
+        videoElements.forEach((video) => {
+          if (video && video.srcObject) {
+            const tracks = (<MediaStream>video.srcObject).getTracks();
+            tracks.forEach((track) => track.stop());
+            video.srcObject = null;
+            video.remove();
+          }
         });
       });
     };
