@@ -1,70 +1,43 @@
 <template>
-  <h1>{{ msg }}</h1>
-
-  <p>
-    Recommended IDE setup:
-    <a href="https://code.visualstudio.com/" target="_blank">VSCode</a>
-    +
-    <a
-      href="https://marketplace.visualstudio.com/items?itemName=octref.vetur"
-      target="_blank"
-    >
-      Vetur
-    </a>
-    or
-    <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
-    (if using
-    <code>&lt;script setup&gt;</code>)
-  </p>
-
-  <p>See <code>README.md</code> for more information.</p>
-
-  <p>
-    <a href="https://vitejs.dev/guide/features.html" target="_blank">
-      Vite Docs
-    </a>
-    |
-    <a href="https://v3.vuejs.org/" target="_blank">Vue 3 Docs</a>
-  </p>
-
-  <button @click="count++">count is: {{ count }}</button>
-  <p>
-    Edit
-    <code>components/HelloWorld.vue</code> to test hot module replacement.
-  </p>
+  <h2>Hello Vue.js with Vite.js</h2>
+  <video
+    @loadeddata="onLoadedData"
+    ref="videoRef"
+    autoplay
+    :srcObject.prop="stream"
+  ></video>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from 'vue'
+import { ref, defineComponent, onMounted } from "vue";
+import Peer from "skyway-js";
+
 export default defineComponent({
-  name: 'HelloWorld',
+  name: "HelloWorld",
   props: {
     msg: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   setup: () => {
-    const count = ref(0)
-    return { count }
-  }
-})
+    const videoRef = ref<HTMLMediaElement | null>(null);
+    const stream = ref<MediaStream | null>(null);
+
+    onMounted(async () => {
+      const peer = new Peer({ key: "f6a377a0-a4e4-473e-9d8a-a490802fee85" });
+
+      // カメラ映像取得
+      stream.value = await navigator.mediaDevices.getUserMedia({ video: true });
+    });
+
+    const onLoadedData = () => {
+      console.info("Loaded");
+    };
+
+    return { videoRef, stream, onLoadedData };
+  },
+});
 </script>
 
-<style scoped>
-a {
-  color: #42b983;
-}
-
-label {
-  margin: 0 0.5em;
-  font-weight: bold;
-}
-
-code {
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 4px;
-  color: #304455;
-}
-</style>
+<style scoped></style>
