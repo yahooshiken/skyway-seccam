@@ -1,8 +1,10 @@
 <template>
   <h2>skyway-seccam</h2>
 
-  <input type="text" v-model="state.roomName" />
-  <button @click="joinRoom">Join room</button>
+  <div class="input-wrapper">
+    <input type="text" v-model="state.roomName" />
+    <button @click="joinRoom">Join room</button>
+  </div>
 
   <div ref="remoteVideos"></div>
 
@@ -10,8 +12,12 @@
   <label for="host">Host</label>
   <input type="radio" id="guest" value="guest" v-model="state.role" />
   <label for="guest">Guest</label>
-  <p><b>My current role</b>: {{ state.role }}</p>
-  <p><b>My Peer ID</b>: {{ id }}</p>
+
+  <h3>My current role: {{ state.role }} (My Peer ID: {{ id }})</h3>
+  <p>
+    The <b>host</b> role can broadcast videos. The <b>guest</b> role can view
+    only.
+  </p>
 </template>
 
 <script lang="ts">
@@ -119,4 +125,8 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.input-wrapper {
+  margin: 20px;
+}
+</style>
