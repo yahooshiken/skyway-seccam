@@ -2,5 +2,5 @@
   "functions": {
     "auth.js": {}
   },
-  "rewrites": [{ "source": "/*", "destination": "auth.js" }]
+  "redirects": [{ "source": "/*", "destination": "auth.js" }]
 }
