@@ -1,6 +1,8 @@
 {
   "functions": {
-    "auth.js": {}
+    "api/auth.js": {
+      "includeFiles": "dist/**"
+    }
   },
-  "redirects": [{ "source": "/*", "destination": "auth.js" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "api/auth.js" }]
 }
