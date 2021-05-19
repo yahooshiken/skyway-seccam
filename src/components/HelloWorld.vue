@@ -2,15 +2,28 @@
   <h2>skyway-seccam</h2>
 
   <div class="input-wrapper">
-    <input type="text" v-model="state.roomName" />
+    <input
+      type="text"
+      v-model="state.roomName"
+    />
     <button @click="joinRoom">Join room</button>
   </div>
 
   <div ref="remoteVideos"></div>
 
-  <input type="radio" id="host" value="host" v-model="state.role" />
+  <input
+    type="radio"
+    id="host"
+    value="host"
+    v-model="state.role"
+  />
   <label for="host">Host</label>
-  <input type="radio" id="guest" value="guest" v-model="state.role" />
+  <input
+    type="radio"
+    id="guest"
+    value="guest"
+    v-model="state.role"
+  />
   <label for="guest">Guest</label>
 
   <h3>My current role: {{ state.role }} (My Peer ID: {{ id }})</h3>
@@ -22,16 +35,10 @@
 
 <script lang="ts">
 import { ref, defineComponent, onMounted, reactive, onUpdated } from "vue";
-import Peer from "skyway-js";
+import Peer, { RoomStream } from "skyway-js";
 
 export default defineComponent({
   name: "HelloWorld",
-  props: {
-    msg: {
-      type: String,
-      required: true,
-    },
-  },
   setup: () => {
     const peer = new Peer({
       key: "f6a377a0-a4e4-473e-9d8a-a490802fee85",
@@ -53,18 +60,21 @@ export default defineComponent({
         id.value = peer.id;
       });
 
-      const s = await navigator.mediaDevices.getUserMedia({ video: true });
+      const s: MediaStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+      });
       stream.value = s;
     });
 
     onUpdated(async () => {
-      if (stream.value) {
-        stream.value.getVideoTracks()[0].enabled = state.role === "host";
+      if (stream.value && stream.value?.getVideoTracks().length) {
+        stream.value.getVideoTracks().forEach((track) => {
+          track.enabled = state.role === "host";
+        });
       }
     });
 
     const joinRoom = () => {
-      console.warn("Join");
       if (!peer.open) return;
 
       const room = peer.joinRoom(state.roomName, {
@@ -72,15 +82,11 @@ export default defineComponent({
         stream: stream.value,
       });
 
-      room.once("open", () => {
-        console.warn("Joined");
-      });
-
-      room.on("peerJoin", (peerId: string) => {
-        console.warn(`${peerId} Joined`);
-      });
-
-      room.on("stream", async (s) => {
+      const handleOpen = (id: string) => {
+        room.send({ [id]: state.role });
+      };
+      const handlePeerJoin = (peerId: string) => {};
+      const handleStream = async (s: RoomStream) => {
         if (s.id === stream.value?.id) return;
 
         const newVideo = document.createElement("video");
@@ -88,9 +94,8 @@ export default defineComponent({
         newVideo.setAttribute("data-peer-id", s.peerId);
         remoteVideos.value.append(newVideo);
         await newVideo.play().catch(console.error);
-      });
-
-      room.on("peerLeave", (peerId: string) => {
+      };
+      const handlePeerLeave = (peerId: string) => {
         const remoteVideo = remoteVideos.value.querySelector(
           `[data-peer-id="${peerId}"]`
         ) as HTMLMediaElement;
@@ -101,11 +106,8 @@ export default defineComponent({
           remoteVideo.srcObject = null;
           remoteVideo.remove();
         }
-
-        console.warn(`${peerId} Left`);
-      });
-
-      room.once("close", () => {
+      };
+      const handleClose = () => {
         const videoElements = Array.from(
           remoteVideos.value.children
         ) as HTMLMediaElement[];
@@ -117,7 +119,13 @@ export default defineComponent({
             video.remove();
           }
         });
-      });
+      };
+
+      room.once("open", handleOpen);
+      room.on("peerJoin", handlePeerJoin);
+      room.on("stream", handleStream);
+      room.on("peerLeave", handlePeerLeave);
+      room.once("close", handleClose);
     };
     ``;
     return { id, stream, remoteVideos, joinRoom, state };
