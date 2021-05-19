@@ -1,0 +1,6 @@
+{
+  "functions": {
+    "auth.js": {}
+  },
+  "rewrites": [{ "source": "/.*", "destination": "auth.js" }]
+}
