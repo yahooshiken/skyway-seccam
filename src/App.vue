@@ -1,17 +1,14 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld />
+  <sec-cam />
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import HelloWorld from "./components/HelloWorld.vue";
+import { defineComponent } from 'vue';
+import SecCam from './components/SecCam.vue';
 
 export default defineComponent({
-  name: "App",
-  components: {
-    HelloWorld,
-  },
+  name: 'App',
+  components: { SecCam },
 });
 </script>
 
