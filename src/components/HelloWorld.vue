@@ -41,7 +41,7 @@ export default defineComponent({
   name: "HelloWorld",
   setup: () => {
     const peer = new Peer({
-      key: "f6a377a0-a4e4-473e-9d8a-a490802fee85",
+      key: process.env.SKYWAY_KEY,
       debug: 3,
     });
 
