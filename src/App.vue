@@ -1,14 +1,16 @@
 <template>
+  <app-header />
   <sec-cam />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import AppHeader from './components/AppHeader.vue';
 import SecCam from './components/SecCam.vue';
 
 export default defineComponent({
   name: 'App',
-  components: { SecCam },
+  components: { SecCam, AppHeader },
 });
 </script>
 
