@@ -1,27 +1,35 @@
-# Vue 3 + Typescript + Vite
+# skyway-seccam
 
-This template should help get you started developing with Vue 3 and Typescript in Vite.
+A toy security camera demo app made for skyway.js and Vue.js practice.
 
-## Recommended IDE Setup
+## Try now
 
-[VSCode](https://code.visualstudio.com/) + [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur). Make sure to enable `vetur.experimental.templateInterpolationService` in settings!
+### 1. Registration for skyway Community Edition
 
-### If Using `<script setup>`
+First, register for [skyway Community Edition](https://console-webrtc-free.ecl.ntt.com/users/registration?_ga=2.201012525.261347268.1621544882-1621260348.1617958600) and get your api key.
 
-[`<script setup>`](https://github.com/vuejs/rfcs/pull/227) is a feature that is currently in RFC stage. To get proper IDE support for the syntax, use [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) instead of Vetur (and disable Vetur).
+### 2. Deploy
 
-## Type Support For `.vue` Imports in TS
+Just click one of the following buttons.
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can use the following:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https%3A%2F%2Fgithub.com%2Fyahooshiken%2Fskyway-seccam)
+[![Deploy with Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/yahooshiken/netlify-statuskit)
 
-### If Using Volar
+When specifying build commands,
+type `echo 'VITE_SKYWAY_KEY=<your-api-key>' > .env && yarn build`
 
-Run `Volar: Switch TS Plugin on/off` from VSCode command palette.
+## Development
 
-### If Using Vetur
+In this project, I'm using [Vite.js](https://vitejs.dev/). Please refer to the official website for more information.
 
-1. Install and add `@vuedx/typescript-plugin-vue` to the [plugins section](https://www.typescriptlang.org/tsconfig#plugins) in `tsconfig.json`
-2. Delete `src/shims-vue.d.ts` as it is no longer needed to provide module info to Typescript
-3. Open `src/main.ts` in VSCode
-4. Open the VSCode command palette
-5. Search and run "Select TypeScript version" -> "Use workspace version"
+### Start dev server
+
+```sh
+$ yarn dev
+```
+
+### Build
+
+```sh
+$ yarn build
+```
