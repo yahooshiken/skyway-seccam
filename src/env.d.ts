@@ -1,6 +1,3 @@
-declare namespace NodeJS {
-  interface ProcessEnv {
-    readonly NODE_ENV: "development" | "production" | "test";
-    readonly SKYWAY_KEY: string;
-  }
+interface ImportMetaEnv {
+  readonly VITE_SKYWAY_KEY: string;
 }

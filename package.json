@@ -8,10 +8,12 @@
     "vercel-build": "yarn build"
   },
   "dependencies": {
+    "lodash.isequal": "^4.5.0",
     "skyway-js": "^4.4.1",
     "vue": "^3.0.5"
   },
   "devDependencies": {
+    "@types/lodash.isequal": "^4.5.5",
     "@types/node": "^15.3.1",
     "@typescript-eslint/eslint-plugin": "^4.24.0",
     "@typescript-eslint/parser": "^4.24.0",
