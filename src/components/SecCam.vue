@@ -146,7 +146,6 @@ export default defineComponent({
   font-size: 2.8rem;
   font-weight: bold;
 }
-
 .guest-avatar {
   display: inline-flex;
   width: 32px;
@@ -176,6 +175,12 @@ export default defineComponent({
   height: 480px;
   margin-bottom: 20px;
 }
+@media screen and (max-width: 780px) {
+  .video-wrapper {
+    width: calc(100vw);
+  }
+}
+
 .video {
   position: absolute;
   bottom: 0;
@@ -212,20 +217,36 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0 24px;
 }
 .input-wrapper {
   display: flex;
   justify-content: space-between;
 }
+
 .input {
   width: 75%;
-  margin-right: 2rem;
+  margin-right: 1.4rem;
   font-weight: 800;
   font-size: 8rem;
   outline: none;
   border: none;
   border-bottom: solid #282828 0.6rem;
 }
+@media screen and (max-width: 1080px) {
+  .input {
+    width: 100%;
+    font-size: 6rem;
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+}
+@media screen and (max-width: 600px) {
+  .input {
+    font-size: 3.2rem;
+  }
+}
+
 .button {
   min-width: 150px;
   margin: 0 auto;
