@@ -1,15 +1,30 @@
 <template>
   <div class="seccam-wrapper">
     <div v-if="state.joined">
-      <p class="room-name">
-        {{ state.roomName }}
-      </p>
+      <div class="video-header">
+        <p class="room-name">
+          {{ state.roomName }}
+        </p>
+        <div v-if="guests.length" class="guest-avatar-group">
+          <span
+            class="guest-avatar"
+            v-for="(guest, index) in guests"
+            :key="guest"
+            :style="avatarStyle(index)"
+            >{{ guest }}</span
+          >
+          <p class="guest-num">{{ guests.length }} People</p>
+        </div>
+      </div>
       <div class="video-wrapper">
         <div v-if="!state.stream" class="video-overlay">
           <p class="main-message">Not avalilable now.</p>
           <p class="sub-message">There is no streamer,</p>
         </div>
         <video class="video" autoplay :srcObject.prop="state.stream"></video>
+      </div>
+      <div class="bye-button-wrapper">
+        <button class="button" @click="closeRoom">Bye 👋</button>
       </div>
     </div>
     <div v-else>
@@ -23,25 +38,26 @@
           class="input"
           placeholder="Room name"
         />
-        <button :disabled="state.roomName === ''" class="join-button" @click="joinRoom">
-          JOIN
-        </button>
+        <button :disabled="state.roomName === ''" class="button" @click="joinRoom">JOIN 🚀</button>
       </div>
       <p class="description">
-        <a v-if="state.role === 'GUEST'" href="#" @click="toggleRole">You want to broadcast?</a>
-        <a v-else href="#" @click="toggleRole">You are ready to broadcast</a>
+        <a v-if="state.role === 'GUEST'" href="#" @click="toggleRole"
+          >You want to broadcast? Click here 📹
+        </a>
+        <a v-else href="#" @click="toggleRole">Now, you're ready to broadcast! 🎉</a>
       </p>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUpdated, reactive } from 'vue';
+import { computed, defineComponent, onMounted, onUpdated, reactive } from 'vue';
 import Peer, { MeshRoom } from 'skyway-js';
 import { peerHandler, roomHandler } from './handlers';
-import { ROLES, State } from './types/state';
 
-const LOG_LEVEL = { none: 0, error: 1, warn: 2, full: 3 } as const;
+import { ROLES, State } from './types/state';
+import { LOG_LEVEL } from '../constants/loglevel';
+import { COLORS } from '../constants/colors';
 
 export default defineComponent({
   name: 'sec-cam',
@@ -50,11 +66,17 @@ export default defineComponent({
     const state = reactive<State>({
       peerId: '',
       joined: false,
-      roomName: 'Room name',
+      roomName: 'Your room',
       role: ROLES.GUEST,
       room: undefined,
       stream: undefined,
       peers: {},
+    });
+
+    const guests = computed(() => {
+      return Object.entries(state.peers)
+        .filter(([_, role]) => role === ROLES.GUEST)
+        .map(([peerId]) => peerId.substring(0, 2));
     });
 
     const toggleRole = () => {
@@ -93,25 +115,66 @@ export default defineComponent({
       roomHandler.peerLeave(room);
       roomHandler.stream(room, state);
       roomHandler.data(room, state);
-      roomHandler.close(room);
+      roomHandler.close(room, state);
     };
 
-    return { state, toggleRole, joinRoom };
+    const closeRoom = () => {
+      if (!peer.open) return;
+
+      state.room?.close();
+    };
+
+    const avatarStyle = (index: number) => {
+      return { backgroundColor: COLORS[index % COLORS.length] };
+    };
+
+    return { state, guests, avatarStyle, toggleRole, joinRoom, closeRoom };
   },
 });
 </script>
 
 <style  scoped>
+.video-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
 .room-name {
   margin-bottom: 12px;
   text-align: left;
-  font-size: 2rem;
+  line-height: 1.2;
+  font-size: 2.8rem;
   font-weight: bold;
+}
+
+.guest-avatar {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  line-height: 1;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  user-select: none;
+  background: red;
+  color: white;
+  border: solid 2px white;
+  border-radius: 50%;
+}
+.guest-avatar:not(:first-child) {
+  margin-left: -16px;
+  mask: radial-gradient(circle 20px at 5px 50%, transparent 99%, #fff 100%);
+}
+.guest-num {
+  font-size: 0.9rem;
+  margin: 0 0 12px;
 }
 .video-wrapper {
   position: relative;
   width: 640px;
   height: 480px;
+  margin-bottom: 20px;
 }
 .video {
   position: absolute;
@@ -163,14 +226,14 @@ export default defineComponent({
   border: none;
   border-bottom: solid #282828 0.6rem;
 }
-.join-button {
-  min-width: 120px;
+.button {
+  min-width: 150px;
   margin: 0 auto;
-  padding: 28px 40px;
+  padding: 20px 40px;
   border: none;
   border-radius: 40px;
   font-weight: 800;
-  font-size: 2rem;
+  font-size: 1.8rem;
   box-sizing: border-box;
   box-shadow: 0 9px 18px rgba(0, 0, 0, 0.2);
   text-align: center;
@@ -179,10 +242,11 @@ export default defineComponent({
   transform: translatez(0);
   transition: all 0.25s ease-out 0s;
 }
-.join-button:disabled {
+.button:disabled {
   background: #888;
   box-shadow: none;
 }
-.description {
+.bye-button-wrapper {
+  text-align: right;
 }
 </style>>

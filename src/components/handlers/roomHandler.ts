@@ -7,33 +7,24 @@ type Room = MeshRoom;
 const roomHandler = {
   open: (room: Room, state: State) => {
     room.once('open', () => {
-      console.warn('Room open');
       const { peerId, role } = state;
       state.peers = { [peerId]: role };
       room.send(state.peers);
     });
   },
   peerJoin: (room: Room) => {
-    room.on('peerJoin', (peerId: string) => {
-      console.warn(`Peer join: ${peerId}`);
-    });
+    room.on('peerJoin', (peerId: string) => {});
   },
   peerLeave: (room: Room) => {
-    room.on('peerLeave', (peerId: string) => {
-      console.warn(`Peer leave: ${peerId}`);
-    });
+    room.on('peerLeave', (peerId: string) => {});
   },
   stream: (room: Room, state: State) => {
     room.on('stream', (stream: MediaStream) => {
-      console.warn('Stream');
-      console.info(stream);
       state.stream = stream;
     });
   },
   data: (room: Room, state: State) => {
     room.on('data', ({ src, data }) => {
-      console.warn(`Data from ${src} is ${data}.`);
-
       const requireUpdate = !isEqual({ ...state.peers }, data);
 
       if (requireUpdate) {
@@ -42,9 +33,18 @@ const roomHandler = {
       }
     });
   },
-  close: (room: Room) => {
+  close: (room: Room, state: State) => {
     room.once('close', () => {
-      console.warn('Room close');
+      const { peerId } = state;
+      const copiedPeers = { ...state.peers };
+      delete copiedPeers[peerId];
+      room.send({ ...copiedPeers });
+
+      state.stream = undefined;
+      state.room = undefined;
+      state.joined = false;
+      state.roomName = 'See you!';
+      state.peers = {};
     });
   },
 };
