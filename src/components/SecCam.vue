@@ -110,13 +110,13 @@ export default defineComponent({
       const { role, joined, room, stream, selectedCameraId } = state;
 
       if (!stream && joined && role === ROLES.HOST) {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        state.cameras = devices.filter((d) => d.kind === 'videoinput');
-        state.selectedCameraId = state.cameras[0]?.deviceId;
-
         const localStream = await navigator.mediaDevices.getUserMedia({ video: true });
         room?.replaceStream(localStream);
         state.stream = localStream;
+
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        state.cameras = devices.filter((d) => d.kind === 'videoinput');
+        state.selectedCameraId = state.cameras[0]?.deviceId;
       }
     });
 
