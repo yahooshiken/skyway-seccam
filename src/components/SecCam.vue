@@ -25,7 +25,10 @@
       </div>
       <div class="footer-wrapper">
         <div class="select-wrapper" v-if="state.role === 'HOST'">
-          <label class="select-label" for="cameras">Cameras</label>
+          <label class="select-label" for="cameras">
+            <img class="camera-icon" src="../assets/camera.svg" alt="Cameras" />
+            Cameras
+          </label>
           <select class="camera-select" name="cameras" v-model="state.selectedCameraId">
             <option v-for="camera in state.cameras" :key="camera.deviceId" :value="camera.deviceId">
               {{ camera.label }}
@@ -298,12 +301,18 @@ export default defineComponent({
   box-shadow: none;
 }
 .select-wrapper {
-  text-align: left;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
-
 .select-label {
   margin-right: 0.5rem;
+}
+
+.camera-icon {
+  vertical-align: sub;
+}
+
+.camera-select {
+  padding: 0.8rem 0.5rem;
 }
 .footer-wrapper {
   text-align: right;
