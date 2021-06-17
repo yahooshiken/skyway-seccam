@@ -23,7 +23,16 @@
         </div>
         <video class="video" autoplay :srcObject.prop="state.stream"></video>
       </div>
-      <div class="bye-button-wrapper">
+      <div class="footer-wrapper">
+        <div class="select-wrapper" v-if="state.role === 'HOST'">
+          <label class="select-label" for="cameras">Cameras</label>
+          <select class="camera-select" name="cameras" v-model="state.selectedCameraId">
+            <option v-for="camera in state.cameras" :key="camera.deviceId" :value="camera.deviceId">
+              {{ camera.label }}
+            </option>
+          </select>
+        </div>
+
         <button class="button" @click="closeRoom">Bye 👋</button>
       </div>
     </div>
@@ -51,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, onUpdated, reactive } from 'vue';
+import { computed, defineComponent, onMounted, onUpdated, reactive, watch } from 'vue';
 import Peer, { MeshRoom } from 'skyway-js';
 import { peerHandler, roomHandler } from './handlers';
 
@@ -71,6 +80,8 @@ export default defineComponent({
       room: undefined,
       stream: undefined,
       peers: {},
+      cameras: [],
+      selectedCameraId: '',
     });
 
     const guests = computed(() => {
@@ -88,19 +99,38 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
+    onMounted(async () => {
       peerHandler.open(peer, state);
     });
 
     onUpdated(async () => {
-      const { role, joined, room, stream } = state;
+      const { role, joined, room, stream, selectedCameraId } = state;
 
       if (!stream && joined && role === ROLES.HOST) {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        state.cameras = devices.filter((d) => d.kind === 'videoinput');
+        state.selectedCameraId = state.cameras[0]?.deviceId;
+
         const localStream = await navigator.mediaDevices.getUserMedia({ video: true });
         room?.replaceStream(localStream);
         state.stream = localStream;
       }
     });
+
+    watch(
+      () => state.selectedCameraId,
+      async () => {
+        const { selectedCameraId, room } = state;
+        const constraints: MediaStreamConstraints = {
+          video: {
+            deviceId: selectedCameraId ? { exact: selectedCameraId } : undefined,
+          },
+        };
+        const localStream = await navigator.mediaDevices.getUserMedia(constraints);
+        room?.replaceStream(localStream);
+        state.stream = localStream;
+      }
+    );
 
     const joinRoom = async () => {
       if (!peer.open) return;
@@ -267,7 +297,15 @@ export default defineComponent({
   background: #888;
   box-shadow: none;
 }
-.bye-button-wrapper {
+.select-wrapper {
+  text-align: left;
+  margin-bottom: 0.5rem;
+}
+
+.select-label {
+  margin-right: 0.5rem;
+}
+.footer-wrapper {
   text-align: right;
 }
 </style>>

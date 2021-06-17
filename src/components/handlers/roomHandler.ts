@@ -43,8 +43,9 @@ const roomHandler = {
       state.stream = undefined;
       state.room = undefined;
       state.joined = false;
-      state.roomName = 'See you!';
       state.peers = {};
+      state.cameras = [];
+      state.selectedCameraId = '';
     });
   },
 };

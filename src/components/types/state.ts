@@ -11,4 +11,6 @@ export interface State {
   role: Role;
   stream: MediaStream | undefined;
   peers: { [key: string]: string };
+  cameras: MediaDeviceInfo[];
+  selectedCameraId: string;
 }
